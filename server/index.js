@@ -67,17 +67,32 @@ app.put("/update",(req,res)=>{
     const id = req.body.id;
 
 
-    const insertQuery = 'UPDATE empleados SET nombre = ?,edad = ?,pais = ?,cargo = ? WHERE id = ?';
+    const insertQuery = 'UPDATE empleados SET nombre = ?,edad = ?,pais = ?,cargo = ?,anios = ? WHERE id = ?';
     db.query(insertQuery, [nombre, edad, pais, cargo, anios,id], (err, result) => {
         if (err) {
-            console.error("Error al actualizar empleado:", err);
+            console.log("Error al actualizar empleado:", err);
             res.status(500).json({ error: "Error al insertar empleado" });
         } else {
-           
             res.send("empleado actualizado con exitos pai")
         }
     });
 });
+
+
+app.delete("/delete",(req,res)=>{
+    const id = req.body.id;
+    const insertQuery = 'DELETE FROM empleados   WHERE id = ?';
+    db.query(insertQuery, [id], (err, result) => {
+        if (err) {
+            // console.log("Error al actualizar empleado:", err);
+            // res.status(500).json({ error: "Error al insertar empleado" });
+              res.send("Error")
+        } else {
+            res.send("empleado ELIMINADO con exitos pai")
+        }
+    });
+});
+
 
 
 
