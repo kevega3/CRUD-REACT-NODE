@@ -30,16 +30,12 @@ app.post("/create",(req,res)=>{
     const pais = req.body.pais;
     const cargo = req.body.cargo;
     const anios = req.body.anios;
-    
-
 
     const insertQuery = 'INSERT INTO empleados (nombre, edad, pais, cargo, anios) VALUES (?, ?, ?, ?, ?)';
     db.query(insertQuery, [nombre, edad, pais, cargo, anios], (err, result) => {
-        if (err) {
-            console.error("Error al insertar empleado:", err);
-            res.status(500).json({ error: "Error al insertar empleado" });
+        if (err) {           
+            res.status(500).json({ error: "Error al insertar empleado", errorMessage:err.message });
         } else {
-            console.log("Empleado Registrado con éxito!!");
             res.status(201).json({ message: "Empleado Registrado con éxito!!" });
         }
     });
@@ -50,8 +46,7 @@ app.get("/empleados",(req,res)=>{
     db.query(consultar,
         (err, result) => {
         if (err) {
-            console.error("Error al buscar empleados:", err);
-            res.status(500).json({ error: "Error al insertar empleado" });
+            res.status(500).json({ error: "Error al insertar empleado" , errorMessage:err.message });
         } else {
             res.send(result);
         }
@@ -70,25 +65,22 @@ app.put("/update",(req,res)=>{
     const insertQuery = 'UPDATE empleados SET nombre = ?,edad = ?,pais = ?,cargo = ?,anios = ? WHERE id = ?';
     db.query(insertQuery, [nombre, edad, pais, cargo, anios,id], (err, result) => {
         if (err) {
-            console.log("Error al actualizar empleado:", err);
-            res.status(500).json({ error: "Error al insertar empleado" });
+           res.status(500).json({error: "Error al Actualizar empleado", errorMessage:err.message})
         } else {
-            res.send("empleado actualizado con exitos pai")
+            res.json({ message: "Empleado eliminado con éxito" });
         }
     });
 });
 
 
-app.delete("/delete",(req,res)=>{
-    const id = req.body.id;
-    const insertQuery = 'DELETE FROM empleados   WHERE id = ?';
-    db.query(insertQuery, [id], (err, result) => {
+app.delete("/delete/:id",(req,res)=>{
+    const id = req.params.id;
+    const DeleteQuery = 'DELETE FROM empleados   WHERE id = ?';
+    db.query(DeleteQuery, id, (err, result) => {
         if (err) {
-            // console.log("Error al actualizar empleado:", err);
-            // res.status(500).json({ error: "Error al insertar empleado" });
-              res.send("Error")
+            res.status(500).json({ error: "Error al eliminar empleado", errorMessage: err.message });          
         } else {
-            res.send("empleado ELIMINADO con exitos pai")
+            res.json({ message: "Empleado eliminado con éxito" });
         }
     });
 });

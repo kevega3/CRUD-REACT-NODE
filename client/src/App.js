@@ -49,6 +49,13 @@ function App() {
         icon: 'success'
       })
       limpiarCampos();
+    }).catch(function(error){
+      MySwal.fire({
+        icon: 'error',
+        title: 'Error al insertar empleado',
+        text: error.response.data.error,
+        footer: error.response.data.errorMessage
+      })
     })
   }
 
@@ -68,21 +75,49 @@ function App() {
         icon: 'success'
       })
       limpiarCampos();
+    }).catch(function(error){
+      MySwal.fire({
+        icon: 'error',
+        title: 'Error al Actualizar',
+        text: error.response.data.error,
+        footer: error.response.data.errorMessage
+      })
     })
   }
 
-   const Delete = () => {
-    Axios.delete('http://localhost:3001/delete', {
-      id:id,
-    }).then((r) => {
-      alert(r);
-      MySwal.fire({
-        title: <strong>Empleado  Eliminado!</strong>,
-        timer : 3000,
-        icon: 'success'
-      })
-      getEmpleados();
+   const deleteEmple = (val) => {
+
+    MySwal.fire({
+      title: 'Esta seguro de eliminar a'+val.nombre+" ? ",
+      text: "Si lo eliminas no podemos de volver este registro",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: '¡Si, eliminarlo!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Axios.delete(`http://localhost:3001/delete/${val.id}`).then(() => {
+          MySwal.fire(
+            'Eliminado!',
+            `Eliminaste a ${val.nombre}`,
+            'success'
+          )
+          getEmpleados();
+        }).catch(function(error){
+          MySwal.fire({
+            icon: 'error',
+            title: 'Error al eliminar',
+            text: error.response.data.error,
+            footer: error.response.data.errorMessage
+          })
+        });
+
+      }
     })
+
+
+  
   }
 
   const limpiarCampos = () => {
@@ -98,6 +133,8 @@ function App() {
   const getEmpleados = () => {
     Axios.get('http://localhost:3001/empleados').then((response) => {
       setEmpleados(response.data);
+    }).catch((error)=>{
+      console.error("Error en la solicitud:", error);
     })
   }
 
@@ -178,8 +215,8 @@ function App() {
                         <button type="button" className="btn btn-info" onClick={(event)=>{
                           editarEmpleado(val);
                         }}>Editar</button>
-                        <button type="button" className="btn btn-danger" onClick={(event)=>{
-                          Delete(val.id);
+                        <button type="button" className="btn btn-danger" onClick={()=>{
+                          deleteEmple(val);
                         }}>Eliminar</button>
                       </div>
                     </tr>
